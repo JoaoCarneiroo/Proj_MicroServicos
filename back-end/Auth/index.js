@@ -15,7 +15,7 @@ DB();
 
 
 // Definir as Rotas
-app.use('/autenticar', utilizadorRoutes);
+app.use('/users', utilizadorRoutes);
 
 
 const PORT = process.env.PORT || 3000;
