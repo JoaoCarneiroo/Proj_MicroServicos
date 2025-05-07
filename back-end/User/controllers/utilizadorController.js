@@ -4,50 +4,33 @@ const jwt = require('jsonwebtoken');
 
 const secretKey = 'carneiro_secret';
 
-// Login
-exports.login = async (req, res) => {
-    const { email, password } = req.body;
+// Verifica credenciais para o serviço Auth
+exports.verificarCredenciais = async (req, res) => {
+  const { email, password } = req.body;
 
-    try {
-        const tokenExistente = req.cookies.Authorization;
-        if (tokenExistente) {
-            try {
-                const decoded = jwt.verify(tokenExistente, secretKey);
-                if (decoded.email === email) {
-                    return res.status(400).json({ error: 'Utilizador já autenticado!' });
-                } else {
-                    return res.status(400).json({ error: 'Utilizador já autenticado com outra conta!' });
-                }
-            } catch (error) {
-                console.error("Erro ao verificar token existente:", error.message);
-            }
-        }
+  try {
+      const utilizador = await Utilizador.findOne({ email });
+      if (!utilizador) {
+          return res.status(404).json({ valido: false });
+      }
 
-        const utilizador = await Utilizador.findOne({ email });
-        if (!utilizador) {
-            return res.status(404).json({ error: 'Email ou Password incorretos' });
-        }
+      const match = await bcrypt.compare(password, utilizador.password);
+      if (!match) {
+          return res.status(401).json({ valido: false });
+      }
 
+      // Retorna os dados mínimos do utilizador
+      return res.status(200).json({
+          valido: true,
+          id: utilizador._id,
+          nome: utilizador.nome,
+          email: utilizador.email
+      });
 
-        const match = await bcrypt.compare(password, utilizador.password);
-        if (!match) {
-            return res.status(401).json({ error: 'Email ou Password incorretos' });
-        }
-
-        const token = jwt.sign({
-            id: utilizador._id,
-            nome: utilizador.nome,
-            email: utilizador.email
-        }, secretKey, { expiresIn: '1h' });
-
-        res.cookie('Authorization', token, { httpOnly: false, secure: false, sameSite: 'Lax' });
-        res.status(200).json({ message: 'Utilizador autenticado com sucesso!', token });
-
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+  } catch (err) {
+      return res.status(500).json({ error: err.message });
+  }
 };
-
 // Logout
 exports.logout = (req, res) => {
     res.clearCookie('Authorization', {

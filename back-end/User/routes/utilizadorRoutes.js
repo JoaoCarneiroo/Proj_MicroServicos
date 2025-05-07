@@ -3,7 +3,7 @@ const router = express.Router();
 const utilizadorController = require('../controllers/utilizadorController');
 
 
-router.post('/login', utilizadorController.login);
+router.post('/verificar', utilizadorController.verificarCredenciais);
 router.post('/logout', utilizadorController.logout);
 
 router.post('/', utilizadorController.mostrarUtilizadores);

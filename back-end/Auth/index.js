@@ -1,21 +1,19 @@
 const express = require('express');
-const DB = require('./config/db');
 
 
 // Todas as Rotas   
-const utilizadorRoutes = require('./routes/utilizadorRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
-// Conexão à Base de Dados MongoDB
-DB();
 
 
 // Definir as Rotas
-app.use('/users', utilizadorRoutes);
+app.use('/auth', authRoutes);
 
 
 const PORT = process.env.PORT || 3000;
