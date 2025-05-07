@@ -3,10 +3,20 @@ const router = express.Router();
 const utilizadorController = require('../controllers/utilizadorController');
 
 
-router.get('/', utilizadorController.mostrarUtilizadores);
-router.post('/', utilizadorController.criarUtilizador);
+router.post('/login', utilizadorController.login);
+router.post('/logout', utilizadorController.logout);
 
+router.post('/', utilizadorController.mostrarUtilizadores);
+router.get('/utilizador/:id', utilizadorController.mostrarUtilizadorID);
+router.get('/utilizador', utilizadorController.mostrarUtilizadorAutenticado);
 
+router.post('/criar', utilizadorController.criarUtilizador);
+router.put('/:id', utilizadorController.atualizarUtilizador);
+router.delete('/:id', utilizadorController.apagarUtilizador);
 
 
 module.exports = router;
+
+
+
+

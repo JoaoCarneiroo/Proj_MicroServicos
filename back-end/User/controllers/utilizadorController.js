@@ -1,34 +1,171 @@
 const Utilizador = require('../models/utilizadorModel');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// Função para criar um novo utilizador
-exports.criarUtilizador = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+const secretKey = 'carneiro_secret';
 
-    // Cria um novo utilizador
-    const novoUser = new Utilizador({
-      username,
-      email,
-      password, // Podes adicionar encriptação de password aqui com bcrypt, por exemplo
-    });
+// Login
+exports.login = async (req, res) => {
+    const { email, password } = req.body;
 
-    // Salva o utilizador na base de dados
-    await novoUser.save();
+    try {
+        const tokenExistente = req.cookies.Authorization;
+        if (tokenExistente) {
+            try {
+                const decoded = jwt.verify(tokenExistente, secretKey);
+                if (decoded.email === email) {
+                    return res.status(400).json({ error: 'Utilizador já autenticado!' });
+                } else {
+                    return res.status(400).json({ error: 'Utilizador já autenticado com outra conta!' });
+                }
+            } catch (error) {
+                console.error("Erro ao verificar token existente:", error.message);
+            }
+        }
 
-    res.status(201).json({ message: 'Novo utilizador criado com sucesso!', user: novoUser });
-  } catch (error) {
-    console.error('Erro ao criar utilizador:', error);
-    res.status(500).json({ message: 'Erro ao criar utilizador', error: error.message });
-  }
+        const utilizador = await Utilizador.findOne({ email });
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Email ou Password incorretos' });
+        }
+
+
+        const match = await bcrypt.compare(password, utilizador.password);
+        if (!match) {
+            return res.status(401).json({ error: 'Email ou Password incorretos' });
+        }
+
+        const token = jwt.sign({
+            id: utilizador._id,
+            nome: utilizador.nome,
+            email: utilizador.email
+        }, secretKey, { expiresIn: '1h' });
+
+        res.cookie('Authorization', token, { httpOnly: false, secure: false, sameSite: 'Lax' });
+        res.status(200).json({ message: 'Utilizador autenticado com sucesso!', token });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
 
-// Função para obter todos os utilizadores
+// Logout
+exports.logout = (req, res) => {
+    res.clearCookie('Authorization', {
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Lax'
+    });
+    res.status(200).json({ message: 'Desconectado com sucesso!' });
+};
+
+// Obter todos os utilizadores
 exports.mostrarUtilizadores = async (req, res) => {
-  try {
-    const utilizadores = await Utilizador.find();
-    res.status(200).json(utilizadores);
-  } catch (error) {
-    console.error('Erro ao obter utilizadores:', error);
-    res.status(500).json({ message: 'Erro ao obter utilizadores', error: error.message });
-  }
+    try {
+        const utilizadores = await Utilizador.find({}, 'nome email');
+        res.json(utilizadores);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Obter utilizador por ID
+exports.mostrarUtilizadorID = async (req, res) => {
+    try {
+        const utilizador = await Utilizador.findById(req.params.id, 'nome email');
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Utilizador não encontrado' });
+        }
+        res.json(utilizador);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Obter utilizador autenticado
+exports.mostrarUtilizadorAutenticado = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'Utilizador não autenticado' });
+        }
+
+        const utilizador = await Utilizador.findById(req.user.id, 'nome email');
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Utilizador não encontrado' });
+        }
+
+        res.json(utilizador);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Criar novo utilizador
+exports.criarUtilizador = async (req, res) => {
+    const { nome, email, password } = req.body;
+
+    if (!nome || !email || !password) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const novoUtilizador = new Utilizador({
+            nome,
+            email,
+            password: hashedPassword
+        });
+
+        await novoUtilizador.save();
+
+
+        res.status(201).json({ message: 'Utilizador criado com Sucesso!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Atualizar utilizador
+exports.atualizarUtilizador = async (req, res) => {
+    const { nome, email, password } = req.body;
+
+    try {
+        const utilizador = await Utilizador.findById(req.user.id);
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Utilizador não encontrado' });
+        }
+
+        if (nome) utilizador.nome = nome;
+        if (email) utilizador.email = email;
+        if (password) utilizador.password = await bcrypt.hash(password, 10);
+
+        await utilizador.save();
+        res.json({ message: 'Utilizador atualizado com sucesso!' });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Apagar utilizador
+exports.apagarUtilizador = async (req, res) => {
+    try {
+        const utilizador = await Utilizador.findById(req.user.id);
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Utilizador não encontrado' });
+        }
+
+        await utilizador.deleteOne();
+
+        res.clearCookie('Authorization', {
+            httpOnly: false,
+            secure: false,
+            sameSite: 'Lax'
+        });
+
+        res.json({ message: 'Utilizador removido com sucesso!' });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 };
