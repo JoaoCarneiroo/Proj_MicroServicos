@@ -1,20 +1,49 @@
-.version: '3.8'
+version: '3.8'
 services:
   user-service:
-    build: ./user
+    build: ./User
     ports:
       - "3001:3000"
     networks:
       - app-net
 
   auth-service:
-    build: ./auth
+    build: ./Auth
     ports:
       - "3002:3000"
     networks:
       - app-net
     depends_on:
       - user-service
+
+  maestro-service:
+    build: ./Maestro
+    ports:
+      - "3003:3000"
+    networks:
+      - app-net
+    depends_on:
+      - user-service
+      - auth-service
+
+  notifs-service:
+    build: ./Notifs
+    ports:
+      - "3004:3000"
+    networks:
+      - app-net
+    depends_on:
+      - user-service
+
+  task-service:
+    build: ./Task
+    ports:
+      - "3005:3000"
+    networks:
+      - app-net
+    depends_on:
+      - user-service
+      - auth-service
 
 networks:
   app-net:
