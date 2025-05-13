@@ -1,39 +1,42 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-// Esquema do Utilizador
-const UtilizadorSchema = new Schema({
+const Utilizador = sequelize.define('Utilizador', {
   nome: {
-    type: String,
-    required: [true, 'O nome é obrigatório.'],
-    trim: true,
-    minlength: [2, 'O nome deve ter pelo menos 2 caracteres.'],
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'O nome é obrigatório.' },
+      len: {
+        args: [2, 255],
+        msg: 'O nome deve ter pelo menos 2 caracteres.'
+      }
+    }
   },
   email: {
-    type: String,
-    required: [true, 'O email é obrigatório.'],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/.+\@.+\..+/, 'O email deve ser válido.'],
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: {
+      msg: 'Já existe um utilizador com esse email.'
+    },
+    validate: {
+      notEmpty: { msg: 'O email é obrigatório.' },
+      isEmail: { msg: 'O email deve ser válido.' },
+    }
   },
   password: {
-    type: String,
-    required: [true, 'A palavra-passe é obrigatória.'],
-    minlength: [6, 'A palavra-passe deve ter no mínimo 6 caracteres.'],
-  },
-}, { timestamps: true });
-
-
-// Mensagem de erro personalizada para violação de campo único (email)
-UtilizadorSchema.post('save', function (error, doc, next) {
-  if (error.name === 'MongoServerError' && error.code === 11000) {
-    next(new Error('Já existe um utilizador com esse email.'));
-  } else {
-    next(error);
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: 'A palavra-passe é obrigatória.' },
+      len: {
+        args: [6, 255],
+        msg: 'A palavra-passe deve ter no mínimo 6 caracteres.'
+      }
+    }
   }
+}, {
+  timestamps: true
 });
-
-const Utilizador = mongoose.model('Utilizador', UtilizadorSchema);
 
 module.exports = Utilizador;

@@ -1,18 +1,17 @@
-# Use the official Node.js image
-FROM node:18
+# Dockerfile para o serviço de utilizadores
+FROM node:14
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-COPY package*.json ./
+# Copiar o package.json e instalar as dependências
+COPY package.json ./
 RUN npm install
 
-# Copy app source code
+# Copiar o restante do código
 COPY . .
 
-# Expose the port (you can customize this if each service uses a different one)
-EXPOSE 3000
+# Expõe a porta do serviço de utilizadores
+EXPOSE 5000
 
-# Command to run the app
-CMD ["npm", "start"]
+# Iniciar o serviço
+CMD ["node", "userService.js"]

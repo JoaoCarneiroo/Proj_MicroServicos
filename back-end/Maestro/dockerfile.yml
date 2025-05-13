@@ -1,18 +1,17 @@
-# Use the official Node.js image
-FROM node:18
+# Dockerfile para o serviço orquestrador
+FROM node:14
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-COPY package*.json ./
+# Copiar o package.json e instalar as dependências
+COPY package.json ./
 RUN npm install
 
-# Copy app source code
+# Copiar o restante do código
 COPY . .
 
-# Expose the port (you can customize this if each service uses a different one)
+# Expõe a porta do orquestrador
 EXPOSE 3000
 
-# Command to run the app
-CMD ["npm", "start"]
+# Iniciar o serviço orquestrador
+CMD ["node", "maestroService.js"]

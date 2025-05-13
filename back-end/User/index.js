@@ -1,5 +1,5 @@
 const express = require('express');
-const DB = require('./config/db');
+const sequelize = require('./config/db');
 
 
 // Todas as Rotas   
@@ -10,15 +10,20 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Conexão à Base de Dados MongoDB
-DB();
-
 
 // Definir as Rotas
 app.use('/autenticar', utilizadorRoutes);
 
 
 const PORT = process.env.PORT || 3000;
+
+sequelize.sync()
+  .then(() => {
+    console.log('Base de dados SQLite sincronizada.');
+  })
+  .catch(err => {
+    console.error('Erro ao sincronizar a base de dados:', err);
+  });
 
 app.listen(PORT, () => 
     console.log(`Servidor ligado na porta ${PORT}`      

@@ -1,49 +1,31 @@
-version: '3.8'
+version: '3'
 services:
-  user-service:
-    build: ./User
+  maestro:
+    build:
+      context: ./maestro
     ports:
-      - "3001:3000"
-    networks:
-      - app-net
-
-  auth-service:
-    build: ./Auth
-    ports:
-      - "3002:3000"
-    networks:
-      - app-net
+      - "3000:3000"
     depends_on:
-      - user-service
+      - auth
+      - user
 
-  maestro-service:
-    build: ./Maestro
+  auth:
+    build:
+      context: ./auth
     ports:
-      - "3003:3000"
-    networks:
-      - app-net
-    depends_on:
-      - user-service
-      - auth-service
+      - "4000:4000"
+    volumes:
+      - ./data/auth.sqlite:/app/db.sqlite
 
-  notifs-service:
-    build: ./Notifs
+  user:
+    build:
+      context: ./user
     ports:
-      - "3004:3000"
-    networks:
-      - app-net
+      - "5000:5000"
+    volumes:
+      - ./data/user.sqlite:/app/db.sqlite
     depends_on:
-      - user-service
+      - auth
 
-  task-service:
-    build: ./Task
-    ports:
-      - "3005:3000"
-    networks:
-      - app-net
-    depends_on:
-      - user-service
-      - auth-service
-
-networks:
-  app-net:
+volumes:
+  data:

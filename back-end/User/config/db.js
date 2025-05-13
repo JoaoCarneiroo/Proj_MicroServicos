@@ -1,17 +1,9 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 
-const MONGO_URI = 'mongodb+srv://joaomiko25:joaogoodman@cluster0.x0o4rxg.mongodb.net/MicroServicos';
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: './config/dados.db',
+  logging: false
+});
 
-const DB = async () => {
-  try {
-    await mongoose.connect(MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB conectado com Sucesso');
-  } catch (err) {
-    console.error('Erro ao conectar ao MongoDB:', err.message);
-  }
-};
-
-module.exports = DB;
+module.exports = sequelize;
