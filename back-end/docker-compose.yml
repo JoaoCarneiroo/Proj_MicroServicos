@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   maestro:
     build:
@@ -8,24 +9,32 @@ services:
     depends_on:
       - auth
       - user
+      - db
 
   auth:
     build:
       context: ./auth
     ports:
       - "4000:4000"
-    volumes:
-      - ./data/auth.sqlite:/app/db.sqlite
+    depends_on:
+      - db
 
   user:
     build:
       context: ./user
     ports:
       - "5000:5000"
-    volumes:
-      - ./data/user.sqlite:/app/db.sqlite
     depends_on:
-      - auth
+      - db
 
-volumes:
-  data:
+  db:
+    image: postgres:latest  # Usando a imagem oficial do PostgreSQL
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: joaomiko         # Define o nome de usuário para o banco de dados
+      POSTGRES_PASSWORD: joaogoodman # Define a senha do usuário
+      POSTGRES_DB: microservicos    # Define o nome do banco de dados que será criado
+    volumes:
+      - ./data/db:/var/lib/postgresql/data  # Mapeia a pasta local para persistir os dados
+    ports:
+      - "5432:5432"  # Expondo a porta 5432 para acesso ao PostgreSQL

@@ -1,15 +1,14 @@
-const Utilizador = require('../models/Utilizador'); // Ajusta o caminho conforme necessário
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const Utilizador = require('../models/utilizadorModel');
+const bcrypt = require('bcryptjs');
 
-const secretKey = 'carneiro_secret';
-
-// Verifica credenciais para o serviço Auth
+// ---------------------------
+// SEÇÃO 1: Autenticação
+// ---------------------------
 exports.verificarCredenciais = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const utilizador = await Utilizador.findOne({ where: { email } }); // Alterado de findOne do Mongoose
+    const utilizador = await Utilizador.findOne({ where: { email } });
     if (!utilizador) {
       return res.status(404).json({ valido: false });
     }
@@ -19,10 +18,9 @@ exports.verificarCredenciais = async (req, res) => {
       return res.status(401).json({ valido: false });
     }
 
-    // Retorna os dados mínimos do utilizador
     return res.status(200).json({
       valido: true,
-      id: utilizador.id, // Alterado de _id para id do Sequelize
+      id: utilizador.id,
       nome: utilizador.nome,
       email: utilizador.email
     });
@@ -32,7 +30,6 @@ exports.verificarCredenciais = async (req, res) => {
   }
 };
 
-// Logout
 exports.logout = (req, res) => {
   res.clearCookie('Authorization', {
     httpOnly: false,
@@ -42,11 +39,13 @@ exports.logout = (req, res) => {
   res.status(200).json({ message: 'Desconectado com sucesso!' });
 };
 
-// Obter todos os utilizadores
+// ---------------------------
+// SEÇÃO 2: Gestão de Utilizadores
+// ---------------------------
 exports.mostrarUtilizadores = async (req, res) => {
   try {
     const utilizadores = await Utilizador.findAll({
-      attributes: ['nome', 'email'] // Selecionando apenas os campos necessários
+      attributes: ['nome', 'email']
     });
     res.json(utilizadores);
   } catch (err) {
@@ -54,7 +53,6 @@ exports.mostrarUtilizadores = async (req, res) => {
   }
 };
 
-// Obter utilizador por ID
 exports.mostrarUtilizadorID = async (req, res) => {
   try {
     const utilizador = await Utilizador.findByPk(req.params.id, {
@@ -68,28 +66,20 @@ exports.mostrarUtilizadorID = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// Obter utilizador autenticado
 exports.mostrarUtilizadorAutenticado = async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Utilizador não autenticado' });
+    try {
+        // Logic to fetch the authenticated user
+        const utilizador = await Utilizador.findByPk(req.user.id, {
+            attributes: ['nome', 'email']
+        });
+        if (!utilizador) {
+            return res.status(404).json({ error: 'Utilizador não encontrado' });
+        }
+        res.json(utilizador);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    const utilizador = await Utilizador.findByPk(req.user.id, {
-      attributes: ['nome', 'email']
-    });
-    if (!utilizador) {
-      return res.status(404).json({ error: 'Utilizador não encontrado' });
-    }
-
-    res.json(utilizador);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 };
-
-// Criar novo utilizador
 exports.criarUtilizador = async (req, res) => {
   const { nome, email, password } = req.body;
 
@@ -112,7 +102,6 @@ exports.criarUtilizador = async (req, res) => {
   }
 };
 
-// Atualizar utilizador
 exports.atualizarUtilizador = async (req, res) => {
   const { nome, email, password } = req.body;
 
@@ -134,7 +123,6 @@ exports.atualizarUtilizador = async (req, res) => {
   }
 };
 
-// Apagar utilizador
 exports.apagarUtilizador = async (req, res) => {
   try {
     const utilizador = await Utilizador.findByPk(req.user.id);
@@ -142,7 +130,7 @@ exports.apagarUtilizador = async (req, res) => {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
 
-    await utilizador.destroy(); // Remove o utilizador da base de dados
+    await utilizador.destroy();
 
     res.clearCookie('Authorization', {
       httpOnly: false,

@@ -1,7 +1,7 @@
 # Dockerfile para o serviço orquestrador
-FROM node:14
+FROM node:20
 
-WORKDIR /app
+WORKDIR /Maestro
 
 # Copiar o package.json e instalar as dependências
 COPY package.json ./

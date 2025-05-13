@@ -11,7 +11,7 @@ router.get('/utilizador/:id', utilizadorController.mostrarUtilizadorID);
 router.get('/utilizador', utilizadorController.mostrarUtilizadorAutenticado);
 
 router.post('/criar', utilizadorController.criarUtilizador);
-router.put('/:id', utilizadorController.atualizarUtilizador);
+router.patch('/:id', utilizadorController.atualizarUtilizador);
 router.delete('/:id', utilizadorController.apagarUtilizador);
 
 
