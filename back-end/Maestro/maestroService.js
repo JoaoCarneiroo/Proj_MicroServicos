@@ -7,8 +7,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Configuração das URLs base de cada serviço
-const userServiceUrl = 'http://user-service-url';  // Substitua pelo URL do seu User Service
-const authServiceUrl = 'http://auth-service-url';  // Substitua pelo URL do seu Auth Service
+const userServiceUrl = 'http://user-service:5000';
+const authServiceUrl = 'http://auth-service:4000';
 
 // -------------------------------------
 // SEÇÃO 1: Autenticação
@@ -47,6 +47,16 @@ app.post('/autenticar/criar', async (req, res) => {
     const response = await axios.post(`${userServiceUrl}/autenticar/criar`, { nome, email, password });
     res.status(201).json(response.data);
   } catch (err) {
+    if (err.response) {
+      // Log de depuração
+      console.log('Erro recebido do user-service:', err.response.data);
+
+      // Repassar o status e os dados de erro vindos do user-service
+      return res.status(err.response.status).json({ error: err.response.data.error });
+    }
+
+    // Erro interno (sem resposta do user-service)
+    console.log('Erro não tratado', err.message);
     res.status(500).json({ error: 'Erro ao criar utilizador: ' + err.message });
   }
 });

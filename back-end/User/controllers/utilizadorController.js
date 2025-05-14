@@ -67,18 +67,18 @@ exports.mostrarUtilizadorID = async (req, res) => {
   }
 };
 exports.mostrarUtilizadorAutenticado = async (req, res) => {
-    try {
-        // Logic to fetch the authenticated user
-        const utilizador = await Utilizador.findByPk(req.user.id, {
-            attributes: ['nome', 'email']
-        });
-        if (!utilizador) {
-            return res.status(404).json({ error: 'Utilizador não encontrado' });
-        }
-        res.json(utilizador);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+  try {
+    // Logic to fetch the authenticated user
+    const utilizador = await Utilizador.findByPk(req.user.id, {
+      attributes: ['nome', 'email']
+    });
+    if (!utilizador) {
+      return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
+    res.json(utilizador);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
 exports.criarUtilizador = async (req, res) => {
   const { nome, email, password } = req.body;
@@ -98,7 +98,13 @@ exports.criarUtilizador = async (req, res) => {
 
     res.status(201).json({ message: 'Utilizador criado com Sucesso!' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // Se for erro de validação do Sequelize
+    if (err instanceof ValidationError) {
+      return res.status(400).json({ error: err.errors.map(e => e.message) });
+    }
+
+    // Outros erros
+    res.status(500).json({ error: 'Erro interno: ' + err.message });
   }
 };
 

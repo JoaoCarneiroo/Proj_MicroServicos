@@ -4,6 +4,7 @@ services:
   maestro:
     build:
       context: ./maestro
+    container_name: maestro-service
     ports:
       - "3000:3000"
     depends_on:
@@ -14,6 +15,7 @@ services:
   auth:
     build:
       context: ./auth
+    container_name: auth-service
     ports:
       - "4000:4000"
     depends_on:
@@ -22,19 +24,31 @@ services:
   user:
     build:
       context: ./user
+    container_name: user-service
     ports:
       - "5000:5000"
     depends_on:
       - db
 
   db:
-    image: postgres:latest  # Usando a imagem oficial do PostgreSQL
+    image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_USER: joaomiko         # Define o nome de usuário para o banco de dados
-      POSTGRES_PASSWORD: joaogoodman # Define a senha do usuário
-      POSTGRES_DB: microservicos    # Define o nome do banco de dados que será criado
+      POSTGRES_USER: joaomiko
+      POSTGRES_PASSWORD: joaogoodman
+      POSTGRES_DB: microservicos
     volumes:
-      - ./data/db:/var/lib/postgresql/data  # Mapeia a pasta local para persistir os dados
+      - ./data/db:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Expondo a porta 5432 para acesso ao PostgreSQL
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
