@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser'); 
+const cors = require('cors');
 
 
 // Todas as Rotas   
@@ -8,11 +9,12 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// Configuração do CORS - Se necessário
-const corsOptions = {
-  origin: '*', // Ou você pode especificar o domínio que precisa acessar o Auth Service
-  credentials: true,  // Permite o envio de cookies
-};
+// Configuração do CORS para a criação de cookie
+app.use(cors({
+   origin: '*',
+   methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+   credentials: true,  
+}));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

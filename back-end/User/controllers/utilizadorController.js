@@ -1,5 +1,6 @@
 const Utilizador = require('../models/utilizadorModel');
 const bcrypt = require('bcryptjs');
+const { ValidationError } = require('sequelize');
 
 // ---------------------------
 // SEÇÃO 1: Autenticação
@@ -10,16 +11,15 @@ exports.verificarCredenciais = async (req, res) => {
   try {
     const utilizador = await Utilizador.findOne({ where: { email } });
     if (!utilizador) {
-      return res.status(404).json({ valido: false });
+      return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
 
     const match = await bcrypt.compare(password, utilizador.password);
     if (!match) {
-      return res.status(401).json({ valido: false });
+      return res.status(401).json({ error: 'Email ou Password incorretas' });
     }
 
     return res.status(200).json({
-      valido: true,
       id: utilizador.id,
       nome: utilizador.nome,
       email: utilizador.email

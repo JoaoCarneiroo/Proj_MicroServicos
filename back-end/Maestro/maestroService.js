@@ -18,12 +18,14 @@ app.post('/autenticar/verificar', async (req, res) => {
     const { email, password } = req.body;
 
     // Fazendo a requisição para o Auth Service para verificar as credenciais
-    const response = await axios.post(`${authServiceUrl}/login`, { email, password });
+    const response = await axios.post(`${authServiceUrl}/auth/login`, { email, password }, {
+      withCredentials: true
+    });
 
     // Se a autenticação for bem-sucedida, retorna a resposta do Auth Service
     return res.status(200).json({ message: response.data.message });
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao autenticar: ' + err.message });
+    res.status(err.response?.status || 500).json({ error: 'Erro ao autenticar: ' + (err.response?.data?.error || err.message) });
   }
 });
 
@@ -31,10 +33,10 @@ app.post('/autenticar/verificar', async (req, res) => {
 app.post('/autenticar/logout', async (req, res) => {
   try {
     // Fazendo a requisição para o Auth Service para realizar o logout
-    const response = await axios.post(`${authServiceUrl}/logout`);
+    const response = await axios.post(`${authServiceUrl}/auth/logout`);
     res.status(200).json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao desconectar: ' + err.message });
+    return res.status(err.response?.status || 500).json({ error: (err.response?.data?.error || err.message) });
   }
 });
 
