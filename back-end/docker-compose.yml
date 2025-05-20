@@ -1,8 +1,10 @@
 services:
   maestro:
     build:
-      context: ./maestro
+      context: ./Maestro
     container_name: maestro-service
+    volumes:
+    - ./Maestro/src:/Maestro/src
     ports:
       - "3000:3000"
     depends_on:
@@ -12,8 +14,10 @@ services:
 
   auth:
     build:
-      context: ./auth
+      context: ./Auth
     container_name: auth-service
+    volumes:
+    - ./Auth/src:/Auth/src
     ports:
       - "4000:4000"
     depends_on:
@@ -21,8 +25,10 @@ services:
 
   user:
     build:
-      context: ./user
+      context: ./User
     container_name: user-service
+    volumes:
+    - ./User/src:/User/src
     ports:
       - "5000:5000"
     depends_on:
@@ -39,6 +45,11 @@ services:
       - ./data/db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U joaomiko -d microservicos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4

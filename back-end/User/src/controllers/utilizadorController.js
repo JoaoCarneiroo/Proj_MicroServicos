@@ -32,7 +32,7 @@ exports.verificarCredenciais = async (req, res) => {
 
 exports.logout = (req, res) => {
   res.clearCookie('Authorization', {
-    httpOnly: false,
+    httpOnly: true,
     secure: false,
     sameSite: 'Lax'
   });

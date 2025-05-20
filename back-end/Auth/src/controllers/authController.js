@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
 
         const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
 
-        // Salvar o token no cookie com a flag httpOnly para proteger contra XSS
+        // Salvar o token no cookie
         res.cookie('Authorization', token, { httpOnly: true, secure: false, sameSite: 'Lax' });
 
         return res.status(200).json({ message: 'Autenticado com sucesso' });

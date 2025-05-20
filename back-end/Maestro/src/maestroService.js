@@ -22,6 +22,14 @@ app.post('/autenticar/verificar', async (req, res) => {
       withCredentials: true
     });
 
+
+
+   res.set('Set-Cookie', response.headers['set-cookie']);
+
+
+    console.log('[AUTH SERVICE RESPONSE HEADERS]', response.headers);
+    console.log('[AUTH SERVICE RESPONSE DATA]', response.data);
+
     // Se a autenticação for bem-sucedida, retorna a resposta do Auth Service
     return res.status(200).json({ message: response.data.message });
   } catch (err) {
@@ -30,15 +38,41 @@ app.post('/autenticar/verificar', async (req, res) => {
 });
 
 // Logout
-app.post('/autenticar/logout', async (req, res) => {
+/* app.post('/autenticar/logout', async (req, res) => {
   try {
     // Fazendo a requisição para o Auth Service para realizar o logout
-    const response = await axios.post(`${authServiceUrl}/auth/logout`);
+    const response = await axios.post(`${authServiceUrl}/auth/logout`,{},{
+      withCredentials: true
+    });
     res.status(200).json(response.data);
   } catch (err) {
     return res.status(err.response?.status || 500).json({ error: (err.response?.data?.error || err.message) });
   }
+}); */
+
+app.post('/autenticar/logout', async (req, res) => {
+  try {
+    // Clear the cookie on the client
+    res.clearCookie('Authorization', {
+      httpOnly: true,
+      sameSite: 'Lax',
+      secure: false, // Must match what you used to set it
+      path: '/',     // Must match the original path if set
+    });
+
+    // Optionally call the auth service logout
+    await axios.post(`${authServiceUrl}/auth/logout`, {}, {
+      withCredentials: true,
+    });
+
+    return res.status(200).json({ message: 'Logout realizado com sucesso' });
+  } catch (err) {
+    return res.status(err.response?.status || 500).json({
+      error: err.response?.data?.error || err.message,
+    });
+  }
 });
+
 
 // -------------------------------------
 // SEÇÃO 2: Gestão de Utilizadores
@@ -117,5 +151,5 @@ app.delete('/autenticar/:id', async (req, res) => {
 // -------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor maestro ligado na porta ${PORT}`);
+  console.log(`Servidor maestro ligado na porta Miau2 ${PORT}`);
 });
