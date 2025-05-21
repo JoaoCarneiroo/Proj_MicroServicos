@@ -23,5 +23,5 @@ sequelize.sync().then(() => {
 
 // Iniciar o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor ligado na porta ${PORT}`);
+  console.log(`Servidor Utilizador ligado na Porta ${PORT}`);
 });

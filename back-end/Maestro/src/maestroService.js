@@ -13,6 +13,8 @@ const authServiceUrl = 'http://auth-service:4000';
 // -------------------------------------
 // SEÇÃO 1: Autenticação
 // -------------------------------------
+
+// Endpoint para Login
 app.post('/autenticar/verificar', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -22,14 +24,6 @@ app.post('/autenticar/verificar', async (req, res) => {
       withCredentials: true
     });
 
-
-
-   res.set('Set-Cookie', response.headers['set-cookie']);
-
-
-    console.log('[AUTH SERVICE RESPONSE HEADERS]', response.headers);
-    console.log('[AUTH SERVICE RESPONSE DATA]', response.data);
-
     // Se a autenticação for bem-sucedida, retorna a resposta do Auth Service
     return res.status(200).json({ message: response.data.message });
   } catch (err) {
@@ -37,35 +31,19 @@ app.post('/autenticar/verificar', async (req, res) => {
   }
 });
 
-// Logout
-/* app.post('/autenticar/logout', async (req, res) => {
-  try {
-    // Fazendo a requisição para o Auth Service para realizar o logout
-    const response = await axios.post(`${authServiceUrl}/auth/logout`,{},{
-      withCredentials: true
-    });
-    res.status(200).json(response.data);
-  } catch (err) {
-    return res.status(err.response?.status || 500).json({ error: (err.response?.data?.error || err.message) });
-  }
-}); */
-
+// Endpoint para Logout
 app.post('/autenticar/logout', async (req, res) => {
   try {
-    // Clear the cookie on the client
+    // Remover a Coookie Authorization
     res.clearCookie('Authorization', {
       httpOnly: true,
+      secure: false,
       sameSite: 'Lax',
-      secure: false, // Must match what you used to set it
-      path: '/',     // Must match the original path if set
-    });
 
-    // Optionally call the auth service logout
-    await axios.post(`${authServiceUrl}/auth/logout`, {}, {
-      withCredentials: true,
     });
 
     return res.status(200).json({ message: 'Logout realizado com sucesso' });
+
   } catch (err) {
     return res.status(err.response?.status || 500).json({
       error: err.response?.data?.error || err.message,
@@ -77,6 +55,18 @@ app.post('/autenticar/logout', async (req, res) => {
 // -------------------------------------
 // SEÇÃO 2: Gestão de Utilizadores
 // -------------------------------------
+
+// Endpoint para Mostrar Todos os Utilizadores
+app.get('/autenticar', async (req, res) => {
+  try {
+    const response = await axios.post(`${userServiceUrl}/autenticar`);
+    res.json(response.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao listar utilizadores: ' + err.message });
+  }
+});
+
+// Endpoint para Criar um Novo Utilizador
 app.post('/autenticar/criar', async (req, res) => {
   try {
     const { nome, email, password } = req.body;
@@ -97,15 +87,8 @@ app.post('/autenticar/criar', async (req, res) => {
   }
 });
 
-app.get('/autenticar', async (req, res) => {
-  try {
-    const response = await axios.post(`${userServiceUrl}/autenticar`);
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao listar utilizadores: ' + err.message });
-  }
-});
 
+// Endpoint para Mostrar um Utilizador Específico pelo ID
 app.get('/autenticar/utilizador/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -116,6 +99,7 @@ app.get('/autenticar/utilizador/:id', async (req, res) => {
   }
 });
 
+// Endpoint para Mostrar o Utilizador Autenticado
 app.get('/autenticar/utilizador', async (req, res) => {
   try {
     const response = await axios.get(`${userServiceUrl}/autenticar/utilizador`);
@@ -125,6 +109,7 @@ app.get('/autenticar/utilizador', async (req, res) => {
   }
 });
 
+// Endpoint para Atualizar um Utilizador
 app.patch('/autenticar/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -136,6 +121,7 @@ app.patch('/autenticar/:id', async (req, res) => {
   }
 });
 
+// Endpoint para Apagar um Utilizador
 app.delete('/autenticar/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -147,9 +133,9 @@ app.delete('/autenticar/:id', async (req, res) => {
 });
 
 // -------------------------------------
-// INICIALIZAÇÃO DO SERVIDOR
+// SERVIDOR
 // -------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor maestro ligado na porta Miau2 ${PORT}`);
+  console.log(`Servidor Maestro ligado na Porta ${PORT}`);
 });
