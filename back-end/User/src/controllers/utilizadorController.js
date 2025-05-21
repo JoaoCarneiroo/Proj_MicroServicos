@@ -45,7 +45,7 @@ exports.logout = (req, res) => {
 exports.mostrarUtilizadores = async (req, res) => {
   try {
     const utilizadores = await Utilizador.findAll({
-      attributes: ['nome', 'email']
+      attributes: ['id', 'nome', 'email']
     });
     res.json(utilizadores);
   } catch (err) {

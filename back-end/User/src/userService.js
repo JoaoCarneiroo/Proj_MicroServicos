@@ -1,15 +1,17 @@
 const express = require('express');
 const sequelize = require('./config/db');
 const utilizadorRoutes = require('./routes/utilizadorRoutes');
+const cookieParser = require('cookie-parser'); 
 
 const app = express();
 
 // Middleware para processar JSON e urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 // Definir as Rotas
-app.use('/autenticar', utilizadorRoutes);
+app.use('/user', utilizadorRoutes);
 
 const PORT = 5000;
 

@@ -1,10 +1,18 @@
 const express = require('express');
 const axios = require('axios');
 const app = express();
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 // Configuração do Body Parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+app.use(cors({
+  origin: 'http://localhost:3001', // URL do teu frontend
+  credentials: true
+}));
 
 // Configuração das URLs base de cada serviço
 const userServiceUrl = 'http://user-service:5000';
@@ -23,6 +31,12 @@ app.post('/autenticar/verificar', async (req, res) => {
     const response = await axios.post(`${authServiceUrl}/auth/login`, { email, password }, {
       withCredentials: true
     });
+
+    // Repassar todos os cookies corretamente
+    const cookies = response.headers['set-cookie'];
+    if (cookies) {
+      cookies.forEach(cookie => res.append('Set-Cookie', cookie));
+    }
 
     // Se a autenticação for bem-sucedida, retorna a resposta do Auth Service
     return res.status(200).json({ message: response.data.message });
@@ -59,7 +73,7 @@ app.post('/autenticar/logout', async (req, res) => {
 // Endpoint para Mostrar Todos os Utilizadores
 app.get('/autenticar', async (req, res) => {
   try {
-    const response = await axios.post(`${userServiceUrl}/autenticar`);
+    const response = await axios.post(`${userServiceUrl}/user`);
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao listar utilizadores: ' + err.message });
@@ -70,7 +84,7 @@ app.get('/autenticar', async (req, res) => {
 app.post('/autenticar/criar', async (req, res) => {
   try {
     const { nome, email, password } = req.body;
-    const response = await axios.post(`${userServiceUrl}/autenticar/criar`, { nome, email, password });
+    const response = await axios.post(`${userServiceUrl}/user/criar`, { nome, email, password });
     res.status(201).json(response.data);
   } catch (err) {
     if (err.response) {
@@ -83,7 +97,7 @@ app.post('/autenticar/criar', async (req, res) => {
 
     // Erro interno (sem resposta do user-service)
     console.log('Erro não tratado', err.message);
-    res.status(500).json({ error: 'Erro ao criar utilizador: ' + err.message });
+    res.status(500).json({ error: 'Erro ao criar utilizador: ' + (err.response?.data?.error || err.message) });
   }
 });
 
@@ -92,20 +106,22 @@ app.post('/autenticar/criar', async (req, res) => {
 app.get('/autenticar/utilizador/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await axios.get(`${userServiceUrl}/autenticar/utilizador/${id}`);
+    const response = await axios.get(`${userServiceUrl}/user/utilizador/${id}`);
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao obter utilizador: ' + err.message });
+    res.status(500).json({ error: 'Erro ao obter utilizador: ' + (err.response?.data?.error || err.message) });
   }
 });
 
 // Endpoint para Mostrar o Utilizador Autenticado
 app.get('/autenticar/utilizador', async (req, res) => {
   try {
-    const response = await axios.get(`${userServiceUrl}/autenticar/utilizador`);
+    const response = await axios.get(`${userServiceUrl}/user/utilizador`, {
+      withCredentials: true
+    });
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao obter utilizador autenticado: ' + err.message });
+    res.status(500).json({ error: 'Erro ao obter utilizador autenticado: ' + (err.response?.data?.error || err.message) });
   }
 });
 
@@ -114,7 +130,9 @@ app.patch('/autenticar/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { nome, email, password } = req.body;
-    const response = await axios.put(`${userServiceUrl}/autenticar/${id}`, { nome, email, password });
+    const response = await axios.put(`${userServiceUrl}/user/${id}`, { nome, email, password }, {
+      withCredentials: true
+    });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao atualizar utilizador: ' + err.message });
@@ -125,7 +143,9 @@ app.patch('/autenticar/:id', async (req, res) => {
 app.delete('/autenticar/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await axios.delete(`${userServiceUrl}/autenticar/${id}`);
+    const response = await axios.delete(`${userServiceUrl}/user/${id}`, {
+      withCredentials: true
+    });
     res.json(response.data);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao apagar utilizador: ' + err.message });

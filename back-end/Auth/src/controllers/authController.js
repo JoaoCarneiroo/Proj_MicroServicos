@@ -9,7 +9,7 @@ exports.login = async (req, res) => {
 
     try {
 
-        await axios.post(`${userServiceUrl}/autenticar/verificar`, { email, password });
+        await axios.post(`${userServiceUrl}/user/verificar`, { email, password });
 
         const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
 
