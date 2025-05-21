@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Configuração do CORS
 app.use(cors({
   origin: 'http://localhost:3001', // URL do teu frontend
   credentials: true
@@ -116,7 +117,12 @@ app.get('/autenticar/utilizador/:id', async (req, res) => {
 // Endpoint para Mostrar o Utilizador Autenticado
 app.get('/autenticar/utilizador', async (req, res) => {
   try {
+    const authCookie = req.cookies['Authorization'];
+
     const response = await axios.get(`${userServiceUrl}/user/utilizador`, {
+      headers: {
+        Cookie: `Authorization=${authCookie}`
+      },
       withCredentials: true
     });
     res.json(response.data);

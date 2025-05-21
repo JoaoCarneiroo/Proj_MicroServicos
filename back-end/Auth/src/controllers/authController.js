@@ -9,9 +9,11 @@ exports.login = async (req, res) => {
 
     try {
 
-        await axios.post(`${userServiceUrl}/user/verificar`, { email, password });
+        const response = await axios.post(`${userServiceUrl}/user/verificar`, { email, password });
 
-        const token = jwt.sign({ email }, secretKey, { expiresIn: '1h' });
+        const utilizador = response.data;
+
+        const token = jwt.sign({ id: utilizador.id, email: utilizador.email }, secretKey, { expiresIn: '1h' });
 
         // Salvar o token no cookie
         res.cookie('Authorization', token, { httpOnly: true, secure: false, sameSite: 'Lax' });

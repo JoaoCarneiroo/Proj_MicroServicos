@@ -3,7 +3,6 @@ const secretKey = 'carneiro_secret';
 
 const checkAuth = (req, res, next) => {
     const token = req.cookies?.Authorization;
-    console.log('Cookie', req.cookies);
 
     if (!token) {
         return res.status(401).json({ error: 'Não existe nenhum token' });

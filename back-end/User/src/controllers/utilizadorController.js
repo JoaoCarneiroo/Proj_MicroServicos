@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const { ValidationError } = require('sequelize');
 
 // ---------------------------
-// SEÇÃO 1: Autenticação
+// SECÇÃO 1: Autenticação
 // ---------------------------
 exports.verificarCredenciais = async (req, res) => {
   const { email, password } = req.body;
@@ -40,7 +40,7 @@ exports.logout = (req, res) => {
 };
 
 // ---------------------------
-// SEÇÃO 2: Gestão de Utilizadores
+// SECÇÃO 2: Gestão de Utilizadores
 // ---------------------------
 exports.mostrarUtilizadores = async (req, res) => {
   try {
@@ -70,8 +70,9 @@ exports.mostrarUtilizadorAutenticado = async (req, res) => {
   try {
     // Logic to fetch the authenticated user
     const utilizador = await Utilizador.findByPk(req.user.id, {
-      attributes: ['nome', 'email']
+      attributes: ['id', 'nome', 'email']
     });
+
     if (!utilizador) {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
