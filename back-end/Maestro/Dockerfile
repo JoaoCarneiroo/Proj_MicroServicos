@@ -11,4 +11,4 @@ COPY src/ .
 
 EXPOSE 3000
 
-CMD ["npx", "nodemon", "maestroService.js"]
+CMD ["npx", "nodemon", "maestroService.js", "-L"]

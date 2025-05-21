@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 5000
 
 # Iniciar o serviço apenas após o PostgreSQL estar pronto
-CMD ["npx", "nodemon", "userService.js"]
+CMD ["npx", "nodemon", "userService.js", "-L"]
