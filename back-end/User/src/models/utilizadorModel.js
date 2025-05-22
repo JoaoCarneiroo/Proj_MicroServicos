@@ -25,6 +25,10 @@ const Utilizador = sequelize.define('Utilizador', {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  emailConfirmado: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
   }
 }, {
   timestamps: true

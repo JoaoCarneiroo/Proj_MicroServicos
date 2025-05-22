@@ -14,6 +14,10 @@ exports.verificarCredenciais = async (req, res) => {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
 
+    if (!utilizador.emailConfirmado) {
+      return res.status(403).json({ error: 'Por favor confirma o teu email antes de iniciar sessão.' });
+    }
+
     const match = await bcrypt.compare(password, utilizador.password);
     if (!match) {
       return res.status(401).json({ error: 'Email ou Password incorretas' });
@@ -28,15 +32,6 @@ exports.verificarCredenciais = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-};
-
-exports.logout = (req, res) => {
-  res.clearCookie('Authorization', {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'Lax'
-  });
-  res.status(200).json({ message: 'Desconectado com sucesso!' });
 };
 
 // ---------------------------
@@ -94,18 +89,47 @@ exports.criarUtilizador = async (req, res) => {
     const novoUtilizador = await Utilizador.create({
       nome,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      emailConfirmado: false 
     });
 
-    res.status(201).json({ message: 'Utilizador criado com Sucesso!' });
+    res.status(201).json({ 
+      message: 'Utilizador criado com sucesso!',
+      id: novoUtilizador.id,
+      nome: novoUtilizador.nome,
+      email: novoUtilizador.email
+    });
+
   } catch (err) {
-    // Se for erro de validação do Sequelize
     if (err instanceof ValidationError) {
       return res.status(400).json({ error: err.errors.map(e => e.message) });
     }
-
-    // Outros erros
     res.status(500).json({ error: 'Erro interno: ' + err.message });
+  }
+};
+exports.confirmarEmail = async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const utilizador = await Utilizador.findOne({ where: { email } });
+
+    if (!utilizador) {
+      return res.status(404).json({ error: 'Utilizador não encontrado' });
+    }
+
+    if (utilizador.emailConfirmado) {
+      return res.status(400).json({ message: 'Email já confirmado.' });
+    }
+
+    utilizador.emailConfirmado = true;
+    await utilizador.save();
+
+    res.status(200).send(`
+      <h2>Email confirmado com sucesso!</h2>
+      <p>Podes agora iniciar sessão na plataforma.</p>
+    `);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao confirmar email: ' + err.message });
   }
 };
 

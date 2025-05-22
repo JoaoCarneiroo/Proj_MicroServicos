@@ -4,20 +4,21 @@ services:
       context: ./Maestro
     container_name: maestro-service
     volumes:
-    - ./Maestro/src:/Maestro/src
+      - ./Maestro/src:/Maestro/src
     ports:
       - "3000:3000"
     depends_on:
       - auth
       - user
       - db
+      - notif
 
   auth:
     build:
       context: ./Auth
     container_name: auth-service
     volumes:
-    - ./Auth/src:/Auth/src
+      - ./Auth/src:/Auth/src
     ports:
       - "4000:4000"
     depends_on:
@@ -28,12 +29,24 @@ services:
       context: ./User
     container_name: user-service
     volumes:
-    - ./User/src:/User/src
+      - ./User/src:/User/src
     ports:
       - "5000:5000"
     depends_on:
       - db
 
+  notif:
+    build:
+      context: ./Notif
+    container_name: notif-service
+    volumes:
+      - ./Notif/src:/Notif/src
+    ports:
+      - "6000:6000"
+    environment:
+      - EMAIL_USER=joaomiko25@gmail.com
+      - EMAIL_PASS=shro vmth xwtf eupa
+      
   db:
     image: postgres:latest
     container_name: postgres_db
@@ -46,7 +59,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U joaomiko -d microservicos"]
+      test: [ "CMD-SHELL", "pg_isready -U joaomiko -d microservicos" ]
       interval: 10s
       timeout: 5s
       retries: 5

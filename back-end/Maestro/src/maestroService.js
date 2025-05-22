@@ -16,8 +16,9 @@ app.use(cors({
 }));
 
 // Configuração das URLs base de cada serviço
-const userServiceUrl = 'http://user-service:5000';
 const authServiceUrl = 'http://auth-service:4000';
+const userServiceUrl = 'http://user-service:5000';
+const notifServiceUrl = 'http://notif-service:6000';
 
 // -------------------------------------
 // SEÇÃO 1: Autenticação
@@ -85,7 +86,17 @@ app.get('/autenticar', async (req, res) => {
 app.post('/autenticar/criar', async (req, res) => {
   try {
     const { nome, email, password } = req.body;
+
+    // Criar Utilizador no user-service
     const response = await axios.post(`${userServiceUrl}/user/criar`, { nome, email, password });
+
+    // Enviar notificação por Email no notif-service
+    try {
+      await axios.post(`${notifServiceUrl}/notificar/email-confirmacao`, { nome, email });
+    } catch (notifErr) {
+      console.error('Falha ao enviar email de confirmação:', notifErr.message);
+    }
+
     res.status(201).json(response.data);
   } catch (err) {
     if (err.response) {
