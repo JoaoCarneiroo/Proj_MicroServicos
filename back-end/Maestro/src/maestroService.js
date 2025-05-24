@@ -11,7 +11,7 @@ app.use(cookieParser());
 
 // Configuração do CORS
 app.use(cors({
-  origin: 'http://localhost:3001', // URL do teu frontend
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 
