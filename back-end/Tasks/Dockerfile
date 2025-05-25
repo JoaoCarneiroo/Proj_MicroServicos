@@ -1,7 +1,7 @@
 # Dockerfile para o serviço de autenticação
 FROM node:20
 
-WORKDIR /Auth/src
+WORKDIR /Tasks/src
 
 # Copiar o package.json e instalar as dependências
 COPY src/package*.json ./
@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Expõe a porta do serviço de autenticação
-EXPOSE 4000
+EXPOSE 7000
 
 # Iniciar o serviço
-CMD ["npx", "nodemon", "authService.js", "-L"]
+CMD ["npx", "nodemon", "taskService.js", "-L"]

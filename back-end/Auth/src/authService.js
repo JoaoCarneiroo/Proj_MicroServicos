@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
 
-// Todas as Rotas   
+// Todas as Rotas  
 const authRoutes = require('./routes/authRoutes');
 
 

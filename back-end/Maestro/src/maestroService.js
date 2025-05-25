@@ -19,6 +19,7 @@ app.use(cors({
 const authServiceUrl = 'http://auth-service:4000';
 const userServiceUrl = 'http://user-service:5000';
 const notifServiceUrl = 'http://notif-service:6000';
+const taskServiceUrl = 'http://task-service:7000';
 
 // -------------------------------------
 // SEÇÃO 1: Autenticação
@@ -168,6 +169,93 @@ app.delete('/autenticar/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao apagar utilizador: ' + err.message });
   }
 });
+
+// -------------------------------------
+// SEÇÃO 3: Gestão de Tarefas
+// -------------------------------------
+
+// Criar nova tarefa
+app.post('/tarefas/criar', async (req, res) => {
+  try {
+    const authCookie = req.cookies['Authorization'];
+
+    const response = await axios.post(`${taskServiceUrl}/tasks`, req.body, {
+      headers: {
+        Cookie: `Authorization=${authCookie}`,
+      },
+      withCredentials: true,
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      error: 'Erro ao criar tarefa: ' + (err.response?.data?.error || err.message),
+    });
+  }
+});
+
+// Listar tarefas do utilizador autenticado
+app.get('/tarefas', async (req, res) => {
+  try {
+    const authCookie = req.cookies['Authorization'];
+
+    const response = await axios.get(`${taskServiceUrl}/tasks`, {
+      headers: {
+        Cookie: `Authorization=${authCookie}`,
+      },
+      withCredentials: true,
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      error: 'Erro ao listar tarefas: ' + (err.response?.data?.error || err.message),
+    });
+  }
+});
+
+// Atualizar tarefa
+app.put('/tarefas/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const authCookie = req.cookies['Authorization'];
+
+    const response = await axios.put(`${taskServiceUrl}/tasks/${id}`, req.body, {
+      headers: {
+        Cookie: `Authorization=${authCookie}`,
+      },
+      withCredentials: true,
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      error: 'Erro ao atualizar tarefa: ' + (err.response?.data?.error || err.message),
+    });
+  }
+});
+
+// Deletar tarefa
+app.delete('/tarefas/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const authCookie = req.cookies['Authorization'];
+
+    const response = await axios.delete(`${taskServiceUrl}/tasks/${id}`, {
+      headers: {
+        Cookie: `Authorization=${authCookie}`,
+      },
+      withCredentials: true,
+    });
+
+    res.status(response.status).json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      error: 'Erro ao deletar tarefa: ' + (err.response?.data?.error || err.message),
+    });
+  }
+});
+
 
 // -------------------------------------
 // SERVIDOR

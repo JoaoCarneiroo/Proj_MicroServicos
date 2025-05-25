@@ -47,6 +47,17 @@ services:
       - EMAIL_USER=joaomiko25@gmail.com
       - EMAIL_PASS=shro vmth xwtf eupa
       
+  tasks:
+      build:
+        context: ./Tasks
+      container_name: task-service
+      volumes:
+        - ./Tasks/src:/Tasks/src
+      ports:
+        - "7000:7000"
+      depends_on:
+        - db
+
   db:
     image: postgres:latest
     container_name: postgres_db
