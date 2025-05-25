@@ -2,14 +2,15 @@ const jwt = require('jsonwebtoken');
 const Task = require('../models/tasksModel');
 const secretKey = 'carneiro_secret';
 
-// Extract user from JWT in cookie
+// Extrair utilizador do token JWT no cookie
 function getUserFromToken(req) {
     const token = req.cookies.Authorization;
     if (!token) throw new Error('Token não fornecido');
 
     try {
-        return jwt.verify(token, secretKey);
-    } catch (err) {
+        const decoded = jwt.verify(token, secretKey);
+        console.log("Token decodificado:", decoded); // ← VERIFICA ISTO
+        return decoded;    } catch (err) {
         throw new Error('Token inválido ou expirado');
     }
 }
@@ -21,7 +22,7 @@ exports.createTask = async (req, res) => {
         const { task, startTime, endTime } = req.body;
 
         const newTask = await Task.create({
-            userId: user.id,
+            userId: user.userId, // Correto
             task,
             startTime,
             endTime
@@ -39,7 +40,7 @@ exports.getTasks = async (req, res) => {
         const user = getUserFromToken(req);
 
         const tasks = await Task.findAll({
-            where: { userId: user.id },
+            where: { userId: user.userId }, // Correto
             order: [['startTime', 'ASC']]
         });
 
@@ -56,7 +57,7 @@ exports.updateTask = async (req, res) => {
         const { id } = req.params;
         const { task, startTime, endTime } = req.body;
 
-        const taskToUpdate = await Task.findOne({ where: { id, userId: user.id } });
+        const taskToUpdate = await Task.findOne({ where: { id, userId: user.userId } }); // Correto
 
         if (!taskToUpdate) {
             return res.status(404).json({ error: 'Tarefa não encontrada ou não autorizada' });
@@ -76,7 +77,7 @@ exports.deleteTask = async (req, res) => {
         const user = getUserFromToken(req);
         const { id } = req.params;
 
-        const taskToDelete = await Task.findOne({ where: { id, userId: user.id } });
+        const taskToDelete = await Task.findOne({ where: { id, userId: user.userId } }); // Corrigido aqui
 
         if (!taskToDelete) {
             return res.status(404).json({ error: 'Tarefa não encontrada ou não autorizada' });

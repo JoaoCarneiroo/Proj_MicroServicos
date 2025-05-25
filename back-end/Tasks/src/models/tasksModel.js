@@ -11,8 +11,8 @@ const Task = sequelize.define('Tasks', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Utilizadors', // Sequelize pluralizes table names by default
-      key: 'id'
+      model: 'Utilizadores',
+      key: 'userId'
     }
   },
   task: {
@@ -53,7 +53,7 @@ const Task = sequelize.define('Tasks', {
   }
 }, {
   tableName: 'tasks',
-  timestamps: true
+  timestamps: false
 });
 
 module.exports = Task;

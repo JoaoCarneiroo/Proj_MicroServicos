@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
 
         const utilizador = response.data;
 
-        const token = jwt.sign({ id: utilizador.id, email: utilizador.email }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: utilizador.userId, email: utilizador.email }, secretKey, { expiresIn: '1h' });
 
         // Salvar o token no cookie
         res.cookie('Authorization', token, { httpOnly: true, secure: false, sameSite: 'Lax' });

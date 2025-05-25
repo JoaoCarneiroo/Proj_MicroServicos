@@ -24,7 +24,7 @@ exports.verificarCredenciais = async (req, res) => {
     }
 
     return res.status(200).json({
-      id: utilizador.id,
+      userId: utilizador.userId,
       nome: utilizador.nome,
       email: utilizador.email
     });
@@ -40,7 +40,7 @@ exports.verificarCredenciais = async (req, res) => {
 exports.mostrarUtilizadores = async (req, res) => {
   try {
     const utilizadores = await Utilizador.findAll({
-      attributes: ['id', 'nome', 'email']
+      attributes: ['userId', 'nome', 'email']
     });
     res.json(utilizadores);
   } catch (err) {
@@ -61,11 +61,12 @@ exports.mostrarUtilizadorID = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 exports.mostrarUtilizadorAutenticado = async (req, res) => {
   try {
     // Logic to fetch the authenticated user
-    const utilizador = await Utilizador.findByPk(req.user.id, {
-      attributes: ['id', 'nome', 'email']
+    const utilizador = await Utilizador.findByPk(req.user.userId, {
+      attributes: ['userId', 'nome', 'email']
     });
 
     if (!utilizador) {
@@ -76,6 +77,7 @@ exports.mostrarUtilizadorAutenticado = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 exports.criarUtilizador = async (req, res) => {
   const { nome, email, password } = req.body;
 
@@ -95,7 +97,7 @@ exports.criarUtilizador = async (req, res) => {
 
     res.status(201).json({ 
       message: 'Utilizador criado com sucesso!',
-      id: novoUtilizador.id,
+      userId: novoUtilizador.userId,
       nome: novoUtilizador.nome,
       email: novoUtilizador.email
     });
