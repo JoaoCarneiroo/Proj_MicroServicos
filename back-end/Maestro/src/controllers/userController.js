@@ -42,10 +42,12 @@ exports.mostrarUtilizadorID = async (req, res) => {
 
 exports.mostrarUtilizadorAutenticado = async (req, res) => {
   try {
-    const authCookie = req.cookies['Authorization'];
+    const { userId } = req.user;
+
     const response = await axios.get(`${userServiceUrl}/user/utilizador`, {
-      headers: { Cookie: `Authorization=${authCookie}` },
-      withCredentials: true
+      headers: {
+        'X-User-Id': userId
+      }
     });
     res.json(response.data);
   } catch (err) {
@@ -55,25 +57,31 @@ exports.mostrarUtilizadorAutenticado = async (req, res) => {
 
 exports.atualizarUtilizador = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { nome, email, password } = req.body;
-    const response = await axios.put(`${userServiceUrl}/user/${id}`, { nome, email, password }, {
-      withCredentials: true
+    const { userId } = req.user;
+
+    const { nome, password } = req.body;
+    const response = await axios.patch(`${userServiceUrl}/user`, { nome, password }, {
+      headers: {
+        'X-User-Id': userId
+      }
     });
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao atualizar utilizador: ' + err.message });
+    res.status(500).json({ error: 'Erro ao atualizar utilizador: ' + (err.response?.data?.error || err.message) });
   }
 };
 
 exports.apagarUtilizador = async (req, res) => {
   try {
-    const { id } = req.params;
-    const response = await axios.delete(`${userServiceUrl}/user/${id}`, {
-      withCredentials: true
+    const { userId } = req.user;
+
+    const response = await axios.delete(`${userServiceUrl}/user`, {
+      headers: {
+        'X-User-Id': userId
+      }
     });
     res.json(response.data);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao apagar utilizador: ' + err.message });
+    res.status(500).json({ error: 'Erro ao apagar utilizador: ' + (err.response?.data?.error || err.message) });
   }
 };

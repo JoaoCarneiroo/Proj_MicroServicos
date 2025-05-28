@@ -63,9 +63,14 @@ exports.mostrarUtilizadorID = async (req, res) => {
 };
 
 exports.mostrarUtilizadorAutenticado = async (req, res) => {
+  const userId = req.headers['x-user-id'];
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Cabeçalho X-User-Id em falta' });
+  }
+
   try {
-    // Logic to fetch the authenticated user
-    const utilizador = await Utilizador.findByPk(req.user.userId, {
+    const utilizador = await Utilizador.findByPk(userId, {
       attributes: ['userId', 'nome', 'email']
     });
 
@@ -92,10 +97,10 @@ exports.criarUtilizador = async (req, res) => {
       nome,
       email,
       password: hashedPassword,
-      emailConfirmado: false 
+      emailConfirmado: false
     });
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: 'Utilizador criado com sucesso!',
       userId: novoUtilizador.userId,
       nome: novoUtilizador.nome,
@@ -136,16 +141,21 @@ exports.confirmarEmail = async (req, res) => {
 };
 
 exports.atualizarUtilizador = async (req, res) => {
-  const { nome, email, password } = req.body;
+  const userId = req.headers['x-user-id'];
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Cabeçalho X-User-Id em falta' });
+  }
+
+  const { nome, password } = req.body;
 
   try {
-    const utilizador = await Utilizador.findByPk(req.user.id);
+    const utilizador = await Utilizador.findByPk(userId);
     if (!utilizador) {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
 
     if (nome) utilizador.nome = nome;
-    if (email) utilizador.email = email;
     if (password) utilizador.password = await bcrypt.hash(password, 10);
 
     await utilizador.save();
@@ -157,8 +167,14 @@ exports.atualizarUtilizador = async (req, res) => {
 };
 
 exports.apagarUtilizador = async (req, res) => {
+  const userId = req.headers['x-user-id'];
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Cabeçalho X-User-Id em falta' });
+  }
+
   try {
-    const utilizador = await Utilizador.findByPk(req.user.id);
+    const utilizador = await Utilizador.findByPk(userId);
     if (!utilizador) {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }

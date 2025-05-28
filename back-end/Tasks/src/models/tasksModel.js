@@ -13,7 +13,8 @@ const Task = sequelize.define('Tasks', {
     references: {
       model: 'Utilizadores',
       key: 'userId'
-    }
+    },
+    onDelete: 'CASCADE'
   },
   task: {
     type: DataTypes.STRING,
@@ -29,16 +30,16 @@ const Task = sequelize.define('Tasks', {
     type: DataTypes.DATE,
     allowNull: false,
     validate: {
-        isAfterToday(value) {
-                const now = new Date();
-                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      isAfterToday(value) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-                if (new Date(value) < today) {
-                    throw new Error('A data de início deve ser hoje ou uma data futura.');
-                }
-            }
+        if (new Date(value) < today) {
+          throw new Error('A data de início deve ser hoje ou uma data futura.');
         }
-    },
+      }
+    }
+  },
   endTime: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -47,7 +48,7 @@ const Task = sequelize.define('Tasks', {
         if (this.startTime && value <= this.startTime) {
           throw new Error('A data de término deve ser após a data de início.');
         }
-        
+
       }
     }
   }

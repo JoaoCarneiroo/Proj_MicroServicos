@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Definir as Rotas
+// Definir as Rotas do Serviço de Utilizador
 app.use('/user', utilizadorRoutes);
 
 const PORT = 5000;

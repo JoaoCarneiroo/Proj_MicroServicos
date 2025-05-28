@@ -3,9 +3,11 @@ const { taskServiceUrl } = require('../config');
 
 exports.criarTarefa = async (req, res) => {
   try {
-    const authCookie = req.cookies['Authorization'];
+    const { userId } = req.user;
     const response = await axios.post(`${taskServiceUrl}/tasks`, req.body, {
-      headers: { Cookie: `Authorization=${authCookie}` },
+      headers: {
+        'X-User-Id': userId
+      },
       withCredentials: true
     });
     res.status(response.status).json(response.data);
@@ -16,9 +18,12 @@ exports.criarTarefa = async (req, res) => {
 
 exports.mostrarTarefaUtilizador = async (req, res) => {
   try {
-    const authCookie = req.cookies['Authorization'];
+    const { userId } = req.user;
+
     const response = await axios.get(`${taskServiceUrl}/tasks`, {
-      headers: { Cookie: `Authorization=${authCookie}` },
+      headers: {
+        'X-User-Id': userId
+      },
       withCredentials: true
     });
     res.status(response.status).json(response.data);
@@ -29,10 +34,13 @@ exports.mostrarTarefaUtilizador = async (req, res) => {
 
 exports.atualizarTarefa = async (req, res) => {
   try {
+    const { userId } = req.user;
+
     const { id } = req.params;
-    const authCookie = req.cookies['Authorization'];
     const response = await axios.patch(`${taskServiceUrl}/tasks/${id}`, req.body, {
-      headers: { Cookie: `Authorization=${authCookie}` },
+      headers: {
+        'X-User-Id': userId
+      },
       withCredentials: true
     });
     res.status(response.status).json(response.data);
@@ -43,14 +51,17 @@ exports.atualizarTarefa = async (req, res) => {
 
 exports.apagarTarefa = async (req, res) => {
   try {
+    const { userId } = req.user;
+
     const { id } = req.params;
-    const authCookie = req.cookies['Authorization'];
     const response = await axios.delete(`${taskServiceUrl}/tasks/${id}`, {
-      headers: { Cookie: `Authorization=${authCookie}` },
+      headers: {
+        'X-User-Id': userId
+      },
       withCredentials: true
     });
     res.status(response.status).json(response.data);
   } catch (err) {
-    res.status(err.response?.status || 500).json({ error: 'Erro ao deletar tarefa: ' + (err.response?.data?.error || err.message) });
+    res.status(err.response?.status || 500).json({ error: 'Erro ao apagar a tarefa: ' + (err.response?.data?.error || err.message) });
   }
 };

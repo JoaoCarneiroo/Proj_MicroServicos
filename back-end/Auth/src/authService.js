@@ -1,15 +1,12 @@
 const express = require('express');
-const cookieParser = require('cookie-parser'); 
-const cors = require('cors');
-
-
-// Todas as Rotas  
+const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const cors = require('cors');
 
 
 const app = express();
 
-// Configuração do CORS para a criação de cookie
+// Configuração do CORS
 app.use(cors({
    origin: '*',
    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
@@ -22,7 +19,7 @@ app.use(cookieParser());
 
 
 
-// Definir as Rotas
+// Definir as Rotas do Serviço de Autenticação
 app.use('/auth', authRoutes);
 
 
