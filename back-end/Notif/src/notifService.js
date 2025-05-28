@@ -36,6 +36,33 @@ app.post('/notificar/email-confirmacao', async (req, res) => {
   }
 });
 
+app.post('/notificar/tarefa-ativa', async (req, res) => {
+  const { email, task } = req.body;
+
+  if (!email || !task) {
+    return res.status(400).json({ error: 'Faltam parâmetros obrigatórios: email e nomeTarefa' });
+  }
+
+  const mailOptions = {
+    from: '"MicroServiços" <joaomiko25@gmail.com>',
+    to: email,
+    subject: `Tarefa "${task}" está ativa`,
+    html: `
+      <h3>Aviso</h3>
+      <p>A tarefa <strong>${task}</strong> acabou de entrar em progresso.</p>
+      <p>Por favor, verifica o sistema para mais detalhes.</p>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: `Email enviado para tarefa "${task}"` });
+  } catch (error) {
+    console.error('Erro ao enviar email de tarefa ativa:', error);
+    res.status(500).json({ error: 'Erro ao enviar email de tarefa ativa' });
+  }
+});
+
 const PORT = process.env.PORT || 6000;
 app.listen(PORT, () => {
   console.log(`Serviço de Notificações ligado na porta ${PORT}`);

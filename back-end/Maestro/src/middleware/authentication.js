@@ -12,7 +12,6 @@ const checkAuth = (req, res, next) => {
         if (err) {
             return res.status(401).json({ error: 'Token Inválido ou Expirado' });
         }
-        console.log('Token decodificado:', decoded); // DEBUG
 
         req.user = decoded;
         next();

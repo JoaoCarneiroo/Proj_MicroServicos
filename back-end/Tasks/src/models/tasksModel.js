@@ -26,6 +26,11 @@ const Task = sequelize.define('Tasks', {
       }
     }
   },
+  estado: {
+    type: DataTypes.ENUM('Não Iniciado', 'Em Progresso', 'Finalizado'),
+    allowNull: false,
+    defaultValue: 'Não Iniciado'
+  },
   startTime: {
     type: DataTypes.DATE,
     allowNull: false,

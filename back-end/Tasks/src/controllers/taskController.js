@@ -1,4 +1,5 @@
 const Task = require('../models/tasksModel');
+const atualizarEstadosTarefas = require('../utils/atualizarEstados');
 
 // Criar uma nova tarefa
 exports.createTask = async (req, res) => {
@@ -19,6 +20,8 @@ exports.createTask = async (req, res) => {
             endTime
         });
 
+        await atualizarEstadosTarefas();
+
         return res.status(201).json({ message: 'Tarefa criada com sucesso', task: newTask });
     } catch (err) {
         return res.status(400).json({ error: err.message });
@@ -35,7 +38,7 @@ exports.getTasks = async (req, res) => {
 
     try {
         const tasks = await Task.findAll({
-            where: { userId: userId }, 
+            where: { userId: userId },
             order: [['startTime', 'ASC']]
         });
 
@@ -61,6 +64,8 @@ exports.updateTask = async (req, res) => {
         if (!taskToUpdate) {
             return res.status(404).json({ error: 'Tarefa não encontrada ou não autorizada' });
         }
+
+        await atualizarEstadosTarefas();
 
         await taskToUpdate.update({ task, startTime, endTime });
 
