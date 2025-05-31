@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notif
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notif
+  template:
+    metadata:
+      labels:
+        app: notif
+    spec:
+      containers:
+        - name: notif
+          image: notif-service
+          ports:
+            - containerPort: 6000
+          env:
+            - name: EMAIL_USER
+              value: "joaomiko25@gmail.com"
+            - name: EMAIL_PASS
+              value: "shro vmth xwtf eupa"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notif-service
+spec:
+  selector:
+    app: notif
+  ports:
+    - protocol: TCP
+      port: 6000
+      targetPort: 6000
+  type: NodePort

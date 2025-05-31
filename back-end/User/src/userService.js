@@ -23,11 +23,11 @@ sequelize.sync().then(() => {
 });
 
 
-// sequelize.sync({ force: true })  // Recria a Base de Dados
-//   .then(() => {
-//     console.log('Base de Dados Postgre SQL conectada com Sucesso');
-//   })
-//   .catch(err => console.error('Erro ao conectar à base de dados:', err));
+sequelize.sync({ force: true })  // Recria a Base de Dados
+  .then(() => {
+    console.log('Base de Dados Postgre SQL conectada com Sucesso');
+  })
+  .catch(err => console.error('Erro ao conectar à base de dados:', err));
 
 
 // Iniciar o Serviço de Utilizador

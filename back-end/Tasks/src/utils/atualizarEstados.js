@@ -28,8 +28,9 @@ async function obterUtilizadorPorId(userId) {
 }
 
 async function atualizarEstadosTarefas() {
-  const agoraLisboa = DateTime.now().setZone('Europe/Lisbon');
+  const agoraLisboa = DateTime.now().setZone('UTC+0');
   const agora = agoraLisboa.toJSDate();
+
 
   await Task.update(
     { estado: 'Não Iniciado' },
@@ -68,13 +69,13 @@ async function atualizarEstadosTarefas() {
 }
 
 // Executar a cada 5 minutos
-cron.schedule('*/5 * * * *', () => {
+//cron.schedule('*/5 * * * *', () => {
+//  atualizarEstadosTarefas();
+//}); 
+
+//10 em 10 segundos para testes
+cron.schedule('*/10 * * * * *', () => {
   atualizarEstadosTarefas();
 });
-
-// 10 em 10 segundos para testes
-// cron.schedule('*/10 * * * * *', () => {
-//   atualizarEstadosTarefas();
-// });
 
 module.exports = atualizarEstadosTarefas;
