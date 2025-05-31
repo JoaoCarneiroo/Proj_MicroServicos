@@ -73,7 +73,7 @@ async function atualizarEstadosTarefas() {
 //  atualizarEstadosTarefas();
 //}); 
 
-//10 em 10 segundos para testes
+// 10 em 10 segundos para testes
 cron.schedule('*/10 * * * * *', () => {
   atualizarEstadosTarefas();
 });
