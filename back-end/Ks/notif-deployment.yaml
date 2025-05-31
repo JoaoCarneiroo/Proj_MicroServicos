@@ -15,6 +15,7 @@ spec:
       containers:
         - name: notif
           image: notif-service
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6000
           env:
