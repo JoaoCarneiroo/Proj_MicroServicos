@@ -18,7 +18,7 @@ app.use(cors({
 // SEÇÃO 1: Autenticação
 // -------------------------------------
 
-app.use('/autenticar', require('./routes/authRoutes'));
+/* app.use('/autenticar', require('./routes/authRoutes')); */
 
 // -------------------------------------
 // SEÇÃO 2: Gestão de Utilizadores

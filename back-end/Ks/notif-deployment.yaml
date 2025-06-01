@@ -1,38 +1,49 @@
+# NOTIF SERVICE - Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notif
+  name: notif-service
+  labels:
+    app: notif-service
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: notif
+      app: notif-service
   template:
     metadata:
       labels:
-        app: notif
+        app: notif-service
     spec:
       containers:
-        - name: notif
-          image: notif-service
+        - name: notif-service
+          image: notif-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 6000
+            - name: http
+              containerPort: 6000
           env:
             - name: EMAIL_USER
-              value: "joaomiko25@gmail.com"
+              valueFrom:
+                configMapKeyRef:
+                  name: notif-config
+                  key: EMAIL_USER
             - name: EMAIL_PASS
-              value: "shro vmth xwtf eupa"
+              valueFrom:
+                secretKeyRef:
+                  name: notif-secret
+                  key: EMAIL_PASS
 ---
+# NOTIF SERVICE - Service
 apiVersion: v1
 kind: Service
 metadata:
   name: notif-service
 spec:
   selector:
-    app: notif
+    app: notif-service
   ports:
-    - protocol: TCP
+    - name: http
       port: 6000
       targetPort: 6000
-  type: NodePort
+  type: ClusterIP

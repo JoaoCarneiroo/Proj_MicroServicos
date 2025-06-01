@@ -1,33 +1,38 @@
+# MAESTRO SERVICE - Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: maestro
+  name: maestro-service
+  labels:
+    app: maestro-service
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: maestro
+      app: maestro-service
   template:
     metadata:
       labels:
-        app: maestro
+        app: maestro-service
     spec:
       containers:
-        - name: maestro
-          image: maestro-service
+        - name: maestro-service
+          image: maestro-service:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
 ---
+# MAESTRO SERVICE - Service
 apiVersion: v1
 kind: Service
 metadata:
   name: maestro-service
 spec:
   selector:
-    app: maestro
+    app: maestro-service
   ports:
-    - protocol: TCP
+    - name: http
       port: 3000
       targetPort: 3000
-  type: NodePort
+  type: ClusterIP

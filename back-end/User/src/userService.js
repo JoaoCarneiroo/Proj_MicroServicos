@@ -23,14 +23,20 @@ sequelize.sync().then(() => {
 });
 
 
-sequelize.sync({ force: true })  // Recria a Base de Dados
+sequelize.sync({ force: false }) // or just sequelize.sync()
   .then(() => {
-    console.log('Base de Dados Postgre SQL conectada com Sucesso');
+    console.log('Base de Dados PostgreSQL conectada com sucesso');
+    // Start the server *inside* the .then() to ensure DB is ready
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
+    });
   })
-  .catch(err => console.error('Erro ao conectar à base de dados:', err));
+  .catch((err) => {
+    console.error('Erro na sincronização do banco de dados', err);
+  });
 
 
 // Iniciar o Serviço de Utilizador
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
 });
