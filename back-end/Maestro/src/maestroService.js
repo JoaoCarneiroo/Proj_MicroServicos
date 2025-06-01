@@ -37,5 +37,5 @@ app.use('/tarefas', require('./routes/taskRoutes'));
 // -------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
+  console.log(`Serviço de Maestro ligado na Porta ${PORT}`);
 });

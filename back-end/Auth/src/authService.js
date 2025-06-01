@@ -26,5 +26,5 @@ app.use('/auth', authRoutes);
 const PORT = 4000;
 
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
+  console.log(`Serviço de Auth ligado na Porta ${PORT}`);
 });

@@ -34,5 +34,5 @@ sequelize.sync({ force: true })  // Recria a Base de Dados
 
 // Iniciar o Serviço de Tarefas
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
+  console.log(`Serviço de Tarefas ligado na Porta ${PORT}`);
 });
