@@ -1,17 +1,16 @@
-# Dockerfile para o serviço de autenticação
 FROM node:20
 
-WORKDIR /Tasks/src
+WORKDIR /usr/src/app
 
-# Copiar o package.json e instalar as dependências
+# Install only the necessary package files
 COPY src/package*.json ./
 RUN npm install
 
-# Copiar o restante do código
-COPY . .
+# Copy all remaining app source files
+COPY src/ .
 
-# Expõe a porta do serviço de autenticação
+# Expose port for Task service
 EXPOSE 7000
 
-# Iniciar o serviço
+# Run the service
 CMD ["npx", "nodemon", "taskService.js", "-L"]

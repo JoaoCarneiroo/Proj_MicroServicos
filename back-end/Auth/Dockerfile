@@ -1,17 +1,14 @@
-# Dockerfile para o serviço de autenticação
 FROM node:20
 
-WORKDIR /Auth/src
+WORKDIR /usr/src/app
 
-# Copiar o package.json e instalar as dependências
+# Copy dependencies files first to leverage Docker layer cache
 COPY src/package*.json ./
 RUN npm install
 
-# Copiar o restante do código
-COPY . .
+# Copy the rest of the application code
+COPY src/ .
 
-# Expõe a porta do serviço de autenticação
 EXPOSE 4000
 
-# Iniciar o serviço
 CMD ["npx", "nodemon", "authService.js", "-L"]

@@ -25,11 +25,14 @@ app.use('/', taskRoutes);
 
 const PORT = 7000;
 
-sequelize.sync({ alter: true }) // ou { force: true } para recriar
-  .then(() => console.log('Tabela de Tarefas sincronizadas com sucesso.'))
-  .catch(err => console.error('Erro ao sincronizar tabela de tarefas:', err));
+sequelize.sync({ force: true })  // Recria a Base de Dados
+  .then(() => {
+    console.log('Base de Dados Postgre SQL conectada com Sucesso');
+  })
+  .catch(err => console.error('Erro ao conectar à base de dados:', err));
+
 
 // Iniciar o Serviço de Tarefas
-app.listen(PORT, () => {
-  console.log(`Serviço de Tarefas ligado na Porta ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
 });

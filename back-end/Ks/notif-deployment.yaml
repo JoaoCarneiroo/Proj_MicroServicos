@@ -24,15 +24,9 @@ spec:
               containerPort: 6000
           env:
             - name: EMAIL_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: notif-config
-                  key: EMAIL_USER
+              value: "joaomiko25@gmail.com"
             - name: EMAIL_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: notif-secret
-                  key: EMAIL_PASS
+              value: "shro vmth xwtf eupa"
 ---
 # NOTIF SERVICE - Service
 apiVersion: v1

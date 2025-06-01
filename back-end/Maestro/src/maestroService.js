@@ -18,7 +18,7 @@ app.use(cors({
 // SEÇÃO 1: Autenticação
 // -------------------------------------
 
-/* app.use('/autenticar', require('./routes/authRoutes')); */
+app.use('/autenticar', require('./routes/authRoutes'));
 
 // -------------------------------------
 // SEÇÃO 2: Gestão de Utilizadores
@@ -36,6 +36,6 @@ app.use('/tarefas', require('./routes/taskRoutes'));
 // SERVIDOR
 // -------------------------------------
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor Maestro ligado na Porta ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
 });

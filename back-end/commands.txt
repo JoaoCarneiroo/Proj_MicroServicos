@@ -1,0 +1,17 @@
+eval $(minikube docker-env)                                                                             ✔  46s  
+
+docker build -t auth-service ./Auth
+docker build -t maestro-service ./Maestro
+docker build -t notif-service ./Notif
+docker build -t user-service ./User
+docker build -t task-service ./Tasks
+
+
+
+kubectl port-forward service/auth-service 4000:4000 -n default > auth.log 2>&1 &            ✔  4s   minikube ⎈ 
+kubectl port-forward service/maestro-service 3000:3000 -n default > maestro.log 2>&1 &
+kubectl port-forward service/notif-service 6000:6000 -n default > notif.log 2>&1 &
+kubectl port-forward service/postgres-service 5432:5432 -n default > postgres.log 2>&1 &
+kubectl port-forward service/task-service 7000:7000 -n default > task.log 2>&1 &
+kubectl port-forward service/user-service 5000:5000 -n default > user.log 2>&1 &
+

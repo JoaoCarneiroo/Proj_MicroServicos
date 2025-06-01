@@ -16,11 +16,11 @@ app.use('/user', utilizadorRoutes);
 const PORT = 5000;
 
 // Conectar ao banco de dados e sincronizar os modelos
-sequelize.sync().then(() => {
-  console.log('Base de Dados PostgreSQL conectada com sucesso');
-}).catch((err) => {
-  console.error('Erro na sincronização do banco de dados', err);
-});
+sequelize.sync({ force: true })  // Recria a Base de Dados
+  .then(() => {
+    console.log('Base de Dados Postgre SQL conectada com Sucesso');
+  })
+  .catch(err => console.error('Erro ao conectar à base de dados:', err));
 
 
 // sequelize.sync({ force: true })  // Recria a Base de Dados

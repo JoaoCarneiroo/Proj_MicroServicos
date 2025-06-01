@@ -1,21 +1,17 @@
-# Dockerfile para o serviço de utilizadores
 FROM node:20
 
-WORKDIR /User/src
+WORKDIR /usr/src/app
 
-# Instala dependências do sistema
+# Install PostgreSQL client
 RUN apt-get update && apt-get install -y postgresql-client
 
-# Copiar o package.json e instalar as dependências Node
+# Copy only the package files first to install dependencies
 COPY src/package*.json ./
 RUN npm install
 
-# Copiar o restante do código, incluindo o script de espera
-COPY . .
+# Then copy the rest of the code from src/
+COPY src/ .
 
-
-# Expõe a porta do serviço de utilizadores
 EXPOSE 5000
 
-# Iniciar o serviço apenas após o PostgreSQL estar pronto
 CMD ["npx", "nodemon", "userService.js", "-L"]

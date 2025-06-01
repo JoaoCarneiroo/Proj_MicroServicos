@@ -1,17 +1,17 @@
-# Dockerfile para o serviço de notificação
 FROM node:20
 
-WORKDIR /Notif/src
+# Set a consistent working directory
+WORKDIR /usr/src/app
 
-# Copiar o package.json e instalar as dependências
+# Copy and install dependencies
 COPY src/package*.json ./
 RUN npm install
 
-# Copiar o restante do código
-COPY . .
+# Copy all service source files
+COPY src/ .
 
-# Expõe a porta do serviço de notificações
+# Expose the correct port
 EXPOSE 6000
 
-# Iniciar o serviço
+# Start the service
 CMD ["npx", "nodemon", "notifService.js", "-L"]

@@ -2,9 +2,9 @@
   "name": "back-end",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "userService.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon userService.js"
   },
   "author": "",
   "license": "ISC",
