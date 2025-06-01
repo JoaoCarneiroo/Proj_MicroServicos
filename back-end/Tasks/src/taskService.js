@@ -25,7 +25,7 @@ app.use('/', taskRoutes);
 
 const PORT = 7000;
 
-sequelize.sync({ force: true })  // Recria a Base de Dados
+sequelize.sync({ alter: true }) 
   .then(() => {
     console.log('Base de Dados Postgre SQL conectada com Sucesso');
   })

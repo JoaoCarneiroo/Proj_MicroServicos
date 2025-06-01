@@ -69,13 +69,13 @@ async function atualizarEstadosTarefas() {
 }
 
 // Executar a cada 5 minutos
-//cron.schedule('*/5 * * * *', () => {
-//  atualizarEstadosTarefas();
-//}); 
+cron.schedule('*/5 * * * *', () => {
+ atualizarEstadosTarefas();
+}); 
 
 // 10 em 10 segundos para testes
-cron.schedule('*/10 * * * * *', () => {
-  atualizarEstadosTarefas();
-});
+// cron.schedule('*/10 * * * * *', () => {
+//   atualizarEstadosTarefas();
+// });
 
 module.exports = atualizarEstadosTarefas;
