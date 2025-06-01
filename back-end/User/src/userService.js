@@ -31,6 +31,6 @@ sequelize.sync().then(() => {
 
 
 // Iniciar o Serviço de Utilizador
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Serviço de Utilizador ligado na Porta ${PORT}`);
 });

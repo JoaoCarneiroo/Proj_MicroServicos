@@ -1,37 +1,38 @@
+# TASK SERVICE - Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-service
+  name: task-service
   labels:
-    app: user-service
+    app: task-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: user-service
+      app: task-service
   template:
     metadata:
       labels:
-        app: user-service
+        app: task-service
     spec:
       containers:
-        - name: user-service
-          image: user-service:latest
+        - name: task-service
+          image: task-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
-              containerPort: 5000
-
+              containerPort: 7000
 ---
+# TASK SERVICE - Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: task-service
 spec:
   selector:
-    app: user  
+    app: task-service
   ports:
     - name: http
-      port: 5000
-      targetPort: 5000
+      port: 7000
+      targetPort: 7000
   type: ClusterIP
