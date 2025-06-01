@@ -14,9 +14,9 @@ exports.verificarCredenciais = async (req, res) => {
       return res.status(404).json({ error: 'Utilizador não encontrado' });
     }
 
-    /* if (!utilizador.emailConfirmado) {
+    if (!utilizador.emailConfirmado) {
       return res.status(403).json({ error: 'Por favor confirma o teu email antes de iniciar sessão.' });
-    } */
+    }
 
     const match = await bcrypt.compare(password, utilizador.password);
     if (!match) {
