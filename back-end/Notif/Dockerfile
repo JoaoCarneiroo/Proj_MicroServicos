@@ -1,17 +1,16 @@
 FROM node:20
 
-# Set a consistent working directory
 WORKDIR /usr/src/app
 
-# Copy and install dependencies
+# Copiar o package.json e instalar as dependências Node.js
 COPY src/package*.json ./
 RUN npm install
 
-# Copy all service source files
+# Copiar o restante do código
 COPY src/ .
 
-# Expose the correct port
+# Expõe a porta do serviço de Notificações
 EXPOSE 6000
 
-# Start the service
+# Iniciar o Serviço de Notificações
 CMD ["npx", "nodemon", "notifService.js", "-L"]

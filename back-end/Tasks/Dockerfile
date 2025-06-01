@@ -2,15 +2,15 @@ FROM node:20
 
 WORKDIR /usr/src/app
 
-# Install only the necessary package files
+# Copiar o package.json e instalar as dependências Node.js
 COPY src/package*.json ./
 RUN npm install
 
-# Copy all remaining app source files
+# Copiar o restante do código
 COPY src/ .
 
-# Expose port for Task service
+# Expõe a porta do serviço de Tarefas
 EXPOSE 7000
 
-# Run the service
+# Iniciar o Serviço de Tarefas
 CMD ["npx", "nodemon", "taskService.js", "-L"]
